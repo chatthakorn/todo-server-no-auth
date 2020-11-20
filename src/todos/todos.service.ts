@@ -14,15 +14,19 @@ export class TodosService {
   }
 
   async $find(): Promise<Todo[]> {
-    return await this.todoModel.find().exec();
+    return await this.todoModel
+      .aggregate([
+        {
+          $match: { status: false },
+        },
+      ])
+      .exec();
   }
 
-  async $findById(id: string): Promise<Todo> {
-    try {
-      return await this.todoModel.findById(id).exec();
-    } catch (err) {
-      throw new NotFoundException(err.message);
-    }
+  async findDone(): Promise<Todo> {
+    return await this.todoModel
+      .aggregate([{ $match: { status: true } }])
+      .exec();
   }
 
   async update(id: string, status: boolean): Promise<any> {
@@ -35,7 +39,7 @@ export class TodosService {
 
   async destroy(id: string) {
     try {
-      return await this.todoModel.remove({ _id: id }).exec();
+      return await this.todoModel.deleteOne({ _id: id }).exec();
     } catch (err) {
       throw new NotFoundException(err.message);
     }

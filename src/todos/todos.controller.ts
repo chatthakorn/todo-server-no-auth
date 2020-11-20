@@ -19,9 +19,9 @@ export class TodosController {
     return this.todosService.$find();
   }
 
-  @Get(':id')
-  findOnly(@Param('id') id: string) {
-    return this.todosService.$findById(id);
+  @Get('/done')
+  findOnly() {
+    return this.todosService.findDone();
   }
 
   @Patch(':id')
